@@ -7,13 +7,15 @@ import System.Random
 main = do 
  displayHomePage
  totalCredit <- readLn
- putStrLn("Your total credits is: $ " ++ totalCredit )
+ putStrLn("Your total credits is: $ " ++ show totalCredit )
  putStrLn("Enter how many credits you want to bet on each game")
  oneGameCredit <- readLn
 
  putStrLn("Now enter <spin> to play, <end> to end the game")
  option <- getLine
- play option totalCredit oneGameCredit
+ gen1 <- getStdGen
+
+ play option totalCredit oneGameCredit gen1
 
 
 
@@ -38,33 +40,34 @@ displayHomePage = mapM_ putStrLn $
  []
 
 
-play option totalCredit oneGameCredit
+play option totalCredit oneGameCredit genX
  | totalCredit == 0 = do 
- 	putStrLn ("You have no more credits")
+  putStrLn ("You have no more credits")
 
  | option == "end" = do
- 	putStrLn ("Game Over")
+  putStrLn ("Game Over")
 
  | option == "spin" = do
- 	let newTotalCredit = totalCredit - oneGameCredit
- 	gen <- getStdGen
+  let newTotalCredit = totalCredit - oneGameCredit
 
-	let (evalSpin1,_) = randomR (0, 9) gen:: (Int, StdGen)
-	let (evalSpin2,_) = randomR (0, 9) gen:: (Int, StdGen)
-	let (evalSpin3,_) = randomR (0, 9) gen:: (Int, StdGen)
+  let (evalSpin1, gen2) = randomR (0, 9) genX:: (Int, StdGen)
+  let (evalSpin2, gen3) = randomR (0, 9) gen2:: (Int, StdGen)
+  let (evalSpin3, gen4) = randomR (0, 9) gen3:: (Int, StdGen)
+  let gen1 = gen4
 
- 	putStrLn ("reel 1: " ++ show evalSpin1)
- 	putStrLn ("reel 2: " ++ show evalSpin2)
- 	putStrLn ("reel 3: " ++ show evalSpin3)
+  putStrLn ("reel 1: " ++ show evalSpin1)
+  putStrLn ("reel 2: " ++ show evalSpin2)
+  putStrLn ("reel 3: " ++ show evalSpin3)
 
- 	putStrLn("Enter how many credits you want to bet on each game")
- 	newOneGameCredit <- readLn
- 	putStrLn("Now enter <spin> to play, <end> to end the game")
- 	newOption <- getLine
- 	play newOption newTotalCredit newOneGameCredit
+  putStrLn(" ")
+  putStrLn("You have: $ " ++ show newTotalCredit ++ " left.")
+  putStrLn("Enter how many credits you want to bet on each game")
+  newOneGameCredit <- readLn
+  putStrLn("Now enter <spin> to play, <end> to end the game")
+  newOption <- getLine
+  play newOption newTotalCredit newOneGameCredit gen4
 
 
 
  | otherwise = do
- 	putStrLn ("Invaild Input")
-
+  putStrLn ("Invaild Input")
