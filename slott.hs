@@ -6,10 +6,10 @@ import System.Random
 
 main = do 
  displayHomePage
- totalCredit <- getLine
+ totalCredit <- readLn
  putStrLn("Your total credits is: $ " ++ totalCredit )
  putStrLn("Enter how many credits you want to bet on each game")
- oneGameCredit <- getLine
+ oneGameCredit <- readLn
 
  putStrLn("Now enter <spin> to play, <end> to end the game")
  option <- getLine
@@ -58,7 +58,7 @@ play option totalCredit oneGameCredit
  	putStrLn ("reel 3: " ++ show evalSpin3)
 
  	putStrLn("Enter how many credits you want to bet on each game")
- 	newOneGameCredit <- getLine
+ 	newOneGameCredit <- readLn
  	putStrLn("Now enter <spin> to play, <end> to end the game")
  	newOption <- getLine
  	play newOption newTotalCredit newOneGameCredit
