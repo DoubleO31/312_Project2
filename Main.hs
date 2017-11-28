@@ -1,8 +1,9 @@
--- putStrLn takes a string a returns an I/O action has 
---      a result type of () (the empty tuple also know as unit)
+--module Main where
 
+import Guess
 import System.IO 
-import System.Random 
+import System.Random
+
 
 main = do 
  displayHomePage
@@ -50,14 +51,30 @@ play option totalCredit oneGameCredit genX
  | option == "spin" = do
   let newTotalCredit = totalCredit - oneGameCredit
 
-  let (evalSpin1, gen2) = randomR (0, 9) genX:: (Int, StdGen)
-  let (evalSpin2, gen3) = randomR (0, 9) gen2:: (Int, StdGen)
-  let (evalSpin3, gen4) = randomR (0, 9) gen3:: (Int, StdGen)
-  let gen1 = gen4
+  let (evalSpin1, gen2) = randomR (0, 8) genX:: (Int, StdGen)
+  let (evalSpin2, gen3) = randomR (0, 8) gen2:: (Int, StdGen)
+  let (evalSpin3, gen4) = randomR (0, 8) gen3:: (Int, StdGen)
 
-  putStrLn ("reel 1: " ++ show evalSpin1)
-  putStrLn ("reel 2: " ++ show evalSpin2)
-  putStrLn ("reel 3: " ++ show evalSpin3)
+  let reel1list = ["7","\1046","\1046","\1046","\1069","\1069","\12398","\12398","\12398"]
+  let reel2list = ["7","\1046","\1046","\1046","\1069","\1069","\12398","\12398","\12398"]
+  let reel3list = ["7","\1046","\1046","\1046","\1069","\1069","\12398","\12398","\12398"]
+  let reel1result = reel1list !! evalSpin1
+  let reel2result = reel2list !! evalSpin2
+  let reel3result = reel3list !! evalSpin3
+  putStrLn(" ")
+  putStrLn ("Reel1   Reel2   Reel3")
+  putStrLn ("  " ++ reel1result ++ "      " ++ reel2result ++ "      " ++ reel3result)
+  
+  guess
+  
+  let oldcredit = newTotalCredit
+  
+  
+  let newTotalCredit = if reel1result == reel2result && reel2result == reel3result
+                       then oneGameCredit*10 + oldcredit
+                       else if reel1result == reel2result || reel2result == reel3result || reel1result == reel3result
+					        then oneGameCredit*2 + oldcredit
+							else oldcredit
 
   putStrLn(" ")
   putStrLn("You have: $ " ++ show newTotalCredit ++ " left.")
@@ -66,7 +83,6 @@ play option totalCredit oneGameCredit genX
   putStrLn("Now enter <spin> to play, <end> to end the game")
   newOption <- getLine
   play newOption newTotalCredit newOneGameCredit gen4
-
 
 
  | otherwise = do
