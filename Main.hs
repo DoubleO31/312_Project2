@@ -1,9 +1,10 @@
 --module Main where
 
-import Guess
+--import Guess
 import System.IO 
 import System.Random
 
+--let totalCredit = 0
 
 main = do 
  displayHomePage
@@ -55,9 +56,9 @@ play option totalCredit oneGameCredit genX
   let (evalSpin2, gen3) = randomR (0, 8) gen2:: (Int, StdGen)
   let (evalSpin3, gen4) = randomR (0, 8) gen3:: (Int, StdGen)
 
-  let reel1list = ["7","\1046","\1046","\1046","\1069","\1069","\12398","\12398","\12398"]
-  let reel2list = ["7","\1046","\1046","\1046","\1069","\1069","\12398","\12398","\12398"]
-  let reel3list = ["7","\1046","\1046","\1046","\1069","\1069","\12398","\12398","\12398"]
+  let reel1list = ["7","BAR","BAR","BAR","BAR","BAR","CHERRY","CHERRY","CHERRY"]
+  let reel2list = ["7","BAR","BAR","BAR","BAR","BAR","CHERRY","CHERRY","CHERRY"]
+  let reel3list = ["7","BAR","BAR","BAR","BAR","BAR","CHERRY","CHERRY","CHERRY"]
   let reel1result = reel1list !! evalSpin1
   let reel2result = reel2list !! evalSpin2
   let reel3result = reel3list !! evalSpin3
@@ -65,7 +66,10 @@ play option totalCredit oneGameCredit genX
   putStrLn ("Reel1   Reel2   Reel3")
   putStrLn ("  " ++ reel1result ++ "      " ++ reel2result ++ "      " ++ reel3result)
   
-  guess
+  if reel1result == reel2result && reel2result == reel3result
+  then guess 
+  else return()
+  
   
   let oldcredit = newTotalCredit
   
@@ -87,3 +91,36 @@ play option totalCredit oneGameCredit genX
 
  | otherwise = do
   putStrLn ("Invaild Input")
+  putStrLn("Now enter <spin> to play, <end> to end the game")
+  newoption <- getLine
+  play newoption totalCredit oneGameCredit genX
+ 
+ 
+guess = do 
+ handle <- openFile "words.txt" ReadMode
+ contents <- hGetContents handle
+ gen <- getStdGen
+ let words = lines contents
+ let (n, _ ) = randomR (0, (length words) - 1)  gen :: (Int, StdGen)
+ let word = words !! n
+ playguess word ( map (\ x -> '_') word ) 6
+ hClose handle
+
+playguess word known guesses
+ | word == known = do
+ 	putStrLn known
+	putStrLn ("You win!")
+ | guesses == 0 = do
+	putStrLn known
+	putStrLn ("You lose. The word was " ++ word ++ ".")
+ | otherwise = do
+  	putStrLn known
+	putStrLn ("You have " ++ (show guesses) ++ " guesses left.")
+	line <- getLine
+	let (newKnown, newGuesses) = handle (head line) word known guesses
+	playguess word newKnown newGuesses
+
+
+handle letter word known guesses
+ | letter `elem` word = ( zipWith (\ w k -> if w == letter then w else k) word known, guesses-1)
+ | otherwise = (known, guesses - 1)
