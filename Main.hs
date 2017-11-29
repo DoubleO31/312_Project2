@@ -3,6 +3,7 @@
 --import Guess
 import System.IO 
 import System.Random
+import Control.Monad
 
 --let totalCredit = 0
 
@@ -56,31 +57,34 @@ play option totalCredit oneGameCredit genX
   let (evalSpin2, gen3) = randomR (0, 8) gen2:: (Int, StdGen)
   let (evalSpin3, gen4) = randomR (0, 8) gen3:: (Int, StdGen)
 
-  let reel1list = ["7","BAR","BAR","BAR","BAR","BAR","CHERRY","CHERRY","CHERRY"]
-  let reel2list = ["7","BAR","BAR","BAR","BAR","BAR","CHERRY","CHERRY","CHERRY"]
-  let reel3list = ["7","BAR","BAR","BAR","BAR","BAR","CHERRY","CHERRY","CHERRY"]
+  let reel1list = ["777","BAR","BAR","BAR","BAR","BAR","CHERRY","CHERRY","CHERRY"]
+  let reel2list = ["777","BAR","BAR","BAR","BAR","BAR","CHERRY","CHERRY","CHERRY"]
+  let reel3list = ["777","BAR","BAR","BAR","BAR","BAR","CHERRY","CHERRY","CHERRY"]
   let reel1result = reel1list !! evalSpin1
   let reel2result = reel2list !! evalSpin2
   let reel3result = reel3list !! evalSpin3
   putStrLn(" ")
   putStrLn ("Reel1   Reel2   Reel3")
   putStrLn ("  " ++ reel1result ++ "      " ++ reel2result ++ "      " ++ reel3result)
-  
-  if reel1result == reel2result && reel2result == reel3result
-  then guess 
-  else return()
-  
-  
   let oldcredit = newTotalCredit
   
   
+  gamecredit <- guess
+    --else return()
+  
+  
   let newTotalCredit = if reel1result == reel2result && reel2result == reel3result
-                       then oneGameCredit*10 + oldcredit
+                       then oneGameCredit*10 + oldcredit+ gamecredit
                        else if reel1result == reel2result || reel2result == reel3result || reel1result == reel3result
 					        then oneGameCredit*2 + oldcredit
 							else oldcredit
 
   putStrLn(" ")
+  let winlosecredit = newTotalCredit - oldcredit
+  if winlosecredit > 0
+  then putStrLn("You have won: $ " ++ show winlosecredit)
+  else return()
+
   putStrLn("You have: $ " ++ show newTotalCredit ++ " left.")
   putStrLn("Enter how many credits you want to bet on each game")
   newOneGameCredit <- readLn
@@ -104,15 +108,17 @@ guess = do
  let (n, _ ) = randomR (0, (length words) - 1)  gen :: (Int, StdGen)
  let word = words !! n
  playguess word ( map (\ x -> '_') word ) 6
- hClose handle
+ --hClose handle
 
-playguess word known guesses
+playguess word known guesses 
  | word == known = do
  	putStrLn known
 	putStrLn ("You win!")
+	return 6
  | guesses == 0 = do
 	putStrLn known
 	putStrLn ("You lose. The word was " ++ word ++ ".")
+	return 0
  | otherwise = do
   	putStrLn known
 	putStrLn ("You have " ++ (show guesses) ++ " guesses left.")
