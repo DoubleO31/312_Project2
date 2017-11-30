@@ -16,11 +16,16 @@ onegame totalcredits genX = do
  putStrLn("Enter how many credits you want to bet on each game")
  oneGameCredit <- readLn
  let onegamec = oneGameCredit
- if onegamec > totalcredits
+ if  onegamec > totalcredits 
  then do
   putStrLn("You don't have enough credits!")
   onegame totalcredits genX
- else return()
+ else if onegamec <= 0
+      then do 
+	   putStrLn("Please enter at least 1 credit to play!")
+	   onegame totalcredits genX
+	  else return()
+
  
  putStrLn("Now enter <spin> to play, <minigame> to play minigame, <end> to end the game")
  option <- getLine
@@ -57,9 +62,11 @@ play option totalCredit oneGameCredit genX
  | option == "spin" = do
   let newTotalCredit = totalCredit - oneGameCredit
   
-  let reel1list = ["777","BAR","BAR","BAR","BAR","BAR","CHERRY","CHERRY","CHERRY"]
-  let reel2list = ["777","BAR","BAR","BAR","BAR","BAR","CHERRY","CHERRY","CHERRY"]
-  let reel3list = ["777","BAR","BAR","BAR","BAR","BAR","CHERRY","CHERRY","CHERRY"]
+  newReel <- buildMachine oneGameCredit
+
+  let reel1list = newReel
+  let reel2list = newReel
+  let reel3list = newReel
 
   let (evalSpin1, gen2) = randomR (0, (length reel1list) - 1) genX:: (Int, StdGen)
   let (evalSpin2, gen3) = randomR (0, (length reel2list) - 1) gen2:: (Int, StdGen)
@@ -90,7 +97,9 @@ play option totalCredit oneGameCredit genX
   else return()
 
   putStrLn("You have: $ " ++ show newTotalCredit ++ " left.")
-  onegame newTotalCredit gen4
+  if newTotalCredit == 0
+  then play option 0 oneGameCredit genX
+  else onegame newTotalCredit gen4
   
   
  | option == "minigame" = do
@@ -98,7 +107,7 @@ play option totalCredit oneGameCredit genX
   gamecredit <- guess genX
   let oldcredit = newTotalCredit
   let newTotalCredit = if gamecredit == 2
-                       then oldcredit + oneGameCredit*5
+                       then oldcredit + oneGameCredit*2
 					   else oldcredit
   let winlosecredit = newTotalCredit - oldcredit
   if winlosecredit > 0
@@ -106,7 +115,9 @@ play option totalCredit oneGameCredit genX
   else return()
 
   putStrLn("You have: $ " ++ show newTotalCredit ++ " left.")
-  onegame newTotalCredit genX
+  if newTotalCredit == 0
+  then play "spin" 0 0 genX
+  else onegame newTotalCredit genX
 
   
 
@@ -115,3 +126,16 @@ play option totalCredit oneGameCredit genX
   putStrLn("Now enter <spin> to play, <minigame> to play minigame, <end> to end the game")
   newoption <- getLine
   play newoption totalCredit oneGameCredit genX
+  
+  
+  
+  
+buildMachine oneGameCredit
+ | oneGameCredit == 1 = do
+  return ["777","BOUNS","ORANGE","WATERMELON","BELL","PEACH","CHERRY","APPLE","PEAR"]
+ | oneGameCredit > 1 && oneGameCredit < 3 = do
+  return ["777","BOUNS","ORANGE","ORANGE","BELL","PEACH","CHERRY","APPLE","PEAR"]
+ | oneGameCredit >= 3 && oneGameCredit < 6 = do
+  return ["777","BOUNS","BOUNS","ORANGE","BELL","BELL","CHERRY","ORANGE","777","APPLE","PEAR"]
+ | otherwise = do
+  return ["777","BOUNS","ORANGE","WATERMELON","BELL","PEACH","CHERRY","APPLE","PEAR"] 
