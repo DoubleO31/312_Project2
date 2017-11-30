@@ -5,12 +5,22 @@ import System.Random
 
 main = do 
  displayHomePage
+ tocredit
+
+tocredit = do 
+ putStrLn("Now please enter the total credit you want to play:")
  totalCredit <- readLn
- putStrLn("Your total credits is: $ " ++ show totalCredit )
- gen1 <- getStdGen 
- onegame totalCredit gen1
-
-
+ let totalc = totalCredit
+ if totalc <= 0
+ then do
+  putStrLn("Your total credits should be more than 0 credit")
+  tocredit
+ else do
+  putStrLn("Your total credits is: $ " ++ show totalCredit )
+  gen1 <- getStdGen 
+  onegame totalCredit gen1
+ 
+ 
 
 onegame totalcredits genX = do
  putStrLn("Enter how many credits you want to bet on each game")
@@ -48,7 +58,6 @@ displayHomePage = mapM_ putStrLn $
  "etc....":
  "":
  "":
- "Now please enter the total credit you want to play:":
  []
 
 
