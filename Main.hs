@@ -39,7 +39,7 @@ onegame totalcredits genX = do
  
  putStrLn("Now enter <spin> to play, <minigame> to play minigame, <end> to end the game")
  option <- getLine
- play option totalcredits oneGameCredit genX
+ play option totalcredits oneGameCredit genX 1
 
 displayHomePage = mapM_ putStrLn $
  "*****************************":
@@ -61,7 +61,7 @@ displayHomePage = mapM_ putStrLn $
  []
 
 
-play option totalCredit oneGameCredit genX
+play option totalCredit oneGameCredit genX iter
  | totalCredit <= 0 = do 
   putStrLn ("You have no more credits")
 
@@ -70,8 +70,11 @@ play option totalCredit oneGameCredit genX
 
  | option == "spin" = do
   let newTotalCredit = totalCredit - oneGameCredit
-  
-  newReel <- buildMachine oneGameCredit
+  let olditer = iter
+  let iter = if olditer > 5 then 0
+			else olditer + 1
+
+  newReel <- buildMachine oneGameCredit iter
 
   let reel1list = newReel
   let reel2list = newReel
@@ -107,7 +110,7 @@ play option totalCredit oneGameCredit genX
 
   putStrLn("You have: $ " ++ show newTotalCredit ++ " left.")
   if newTotalCredit == 0
-  then play option 0 oneGameCredit genX
+  then play option 0 oneGameCredit genX iter
   else onegame newTotalCredit gen4
   
   
@@ -125,7 +128,7 @@ play option totalCredit oneGameCredit genX
 
   putStrLn("You have: $ " ++ show newTotalCredit ++ " left.")
   if newTotalCredit == 0
-  then play "spin" 0 0 genX
+  then play "spin" 0 0 genX iter
   else onegame newTotalCredit genX
 
   
@@ -134,17 +137,19 @@ play option totalCredit oneGameCredit genX
   putStrLn ("Invaild Input")
   putStrLn("Now enter <spin> to play, <minigame> to play minigame, <end> to end the game")
   newoption <- getLine
-  play newoption totalCredit oneGameCredit genX
+  play newoption totalCredit oneGameCredit genX iter
   
   
   
   
-buildMachine oneGameCredit
- | oneGameCredit == 1 = do
+buildMachine oneGameCredit iter
+ | (oneGameCredit*iter) == 1 = do
   return ["777","BOUNS","ORANGE","WATERMELON","BELL","PEACH","CHERRY","APPLE","PEAR"]
- | oneGameCredit > 1 && oneGameCredit < 3 = do
+ | (oneGameCredit*iter) > 1 && oneGameCredit < 3 = do
   return ["777","BOUNS","ORANGE","ORANGE","BELL","PEACH","CHERRY","APPLE","PEAR"]
- | oneGameCredit >= 3 && oneGameCredit < 6 = do
+ | (oneGameCredit*iter) >= 3 && oneGameCredit < 6 = do
   return ["777","BOUNS","BOUNS","ORANGE","BELL","BELL","CHERRY","ORANGE","777","APPLE","PEAR"]
  | otherwise = do
   return ["777","BOUNS","ORANGE","WATERMELON","BELL","PEACH","CHERRY","APPLE","PEAR"] 
+
+ 
