@@ -97,7 +97,7 @@ play option totalCredit oneGameCredit genX
   let newTotalCredit = totalCredit - oneGameCredit
   gamecredit <- guess genX
   let oldcredit = newTotalCredit
-  let newTotalCredit = if gamecredit == 1
+  let newTotalCredit = if gamecredit == 2
                        then oldcredit + oneGameCredit*5
 					   else oldcredit
   let winlosecredit = newTotalCredit - oldcredit
