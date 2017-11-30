@@ -9,7 +9,7 @@ guess gen5= do
  let words = lines contents
  let (n, _ ) = randomR (0, (length words) - 1)  gen5 :: (Int, StdGen)
  let word = words !! n
- playguess word ( map (\ x -> '_') word ) 6
+ playguess word ( map (\ x -> '_') word ) 5
 
 playguess word known guesses 
  | word == known = do
@@ -29,5 +29,5 @@ playguess word known guesses
 
 
 handle letter word known guesses
- | letter `elem` word = ( zipWith (\ w k -> if w == letter then w else k) word known, guesses-1)
- | otherwise = (known, guesses)
+ | letter `elem` word = ( zipWith (\ w k -> if w == letter then w else k) word known, guesses)
+ | otherwise = (known, guesses-1)
