@@ -69,15 +69,15 @@ play option totalCredit oneGameCredit genX
   let oldcredit = newTotalCredit
   
   
-  gamecredit <- guess
-    --else return()
+  gamecredit <- if reel1result == reel2result && reel2result == reel3result then guess
+                else return(0)
   
   
   let newTotalCredit = if reel1result == reel2result && reel2result == reel3result
-                       then oneGameCredit*10 + oldcredit+ gamecredit
+                       then oneGameCredit * 10 + oldcredit + gamecredit
                        else if reel1result == reel2result || reel2result == reel3result || reel1result == reel3result
-					        then oneGameCredit*2 + oldcredit
-							else oldcredit
+                  then oneGameCredit*2 + oldcredit
+              else oldcredit
 
   putStrLn(" ")
   let winlosecredit = newTotalCredit - oldcredit
@@ -112,19 +112,19 @@ guess = do
 
 playguess word known guesses 
  | word == known = do
- 	putStrLn known
-	putStrLn ("You win!")
-	return 6
+  putStrLn known
+  putStrLn ("You win!")
+  return 6
  | guesses == 0 = do
-	putStrLn known
-	putStrLn ("You lose. The word was " ++ word ++ ".")
-	return 0
+  putStrLn known
+  putStrLn ("You lose. The word was " ++ word ++ ".")
+  return 0
  | otherwise = do
-  	putStrLn known
-	putStrLn ("You have " ++ (show guesses) ++ " guesses left.")
-	line <- getLine
-	let (newKnown, newGuesses) = handle (head line) word known guesses
-	playguess word newKnown newGuesses
+  putStrLn known
+  putStrLn ("You have " ++ (show guesses) ++ " guesses left.")
+  line <- getLine
+  let (newKnown, newGuesses) = handle (head line) word known guesses
+  playguess word newKnown newGuesses
 
 
 handle letter word known guesses
