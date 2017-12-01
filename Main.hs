@@ -136,8 +136,8 @@ play option totalCredit oneGameCredit genX iter
   gamecredit <- if n == 0 then guessword genX else guessnumber genX
   
   let oldcredit = newTotalCredit
-  let newTotalCredit = if gamecredit == 2 then oldcredit + oneGameCredit*2 else oldcredit
-  let winlosecredit = newTotalCredit - oldcredit
+  let newTotalCredit = if gamecredit == 2 then oldcredit + oneGameCredit*2 + oneGameCredit else oldcredit
+  let winlosecredit = newTotalCredit - oldcredit - oneGameCredit
   if winlosecredit > 0
   then putStrLn("You have won: $ " ++ show winlosecredit)
   else return()
