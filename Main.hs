@@ -1,15 +1,17 @@
-import Guess
+import Word
+import Number
 import System.IO 
 import System.Random
+import Text.Read
 
 
 main = do 
  displayHomePage
  tocredit
 
+ 
 tocredit = do 
- putStrLn("Now please enter the total credit you want to play:")
- totalCredit <- readLn
+ totalCredit <- getLineInttotal
  let totalc = totalCredit
  if totalc <= 0
  then do
@@ -18,33 +20,32 @@ tocredit = do
  else do
   putStrLn("You now have: $ " ++ show totalCredit ++ " credits." )
   gen1 <- getStdGen 
-  onegame totalCredit gen1
-
-onegame totalcredits genX = do
- putStrLn(" ")
- putStrLn("Enter how many credits you want to bet on each game")
- oneGameCredit <- readLn
+  onegame totalCredit gen1 0
+ 
+ 
+onegame totalcredits genX iter = do
+ oneGameCredit <- getLineIntsingle
  let onegamec = oneGameCredit
  if  onegamec > totalcredits 
  then do
   putStrLn("You don't have enough credits!")
-  onegame totalcredits genX
- else if onegamec <= 0
-      then do 
-     putStrLn("Please enter at least 1 credit to play!")
-     onegame totalcredits genX
-    else return()
+  onegame totalcredits genX iter
+ else 
+  if onegamec <= 0
+  then do 
+   putStrLn("Please enter at least 1 credit to play!")
+   onegame totalcredits genX iter
+  else return()
 
-
+ 
  putStrLn(" ")
  putStrLn(" ")
  putStrLn("Now enter: ")
  putStrLn("  <spin>   to play")
  putStrLn("<minigame> to play minigame")
  putStrLn("  <end>    to end the game") 
-
  option <- getLine
- play option totalcredits oneGameCredit genX 1
+ play option totalcredits oneGameCredit genX iter
 
 displayHomePage = mapM_ putStrLn $
  "***********************************************************************":
@@ -80,8 +81,7 @@ play option totalCredit oneGameCredit genX iter
  | option == "spin" = do
   let newTotalCredit = totalCredit - oneGameCredit
   let olditer = iter
-  let iter = if olditer > 5 then 0
-      else olditer + 1
+  let iter = if olditer > 5 then 0 else olditer + 1
 
   newReel <- buildMachine oneGameCredit iter
 
@@ -101,18 +101,25 @@ play option totalCredit oneGameCredit genX iter
   putStrLn ("  Reel1     Reel2     Reel3")
   putStrLn ("  " ++ reel1result ++ "      " ++ reel2result ++ "      " ++ reel3result)
   
-  gamecredit <- if reel1result == reel2result && reel2result == reel3result then guess genX
-                else return(0)
+  gamecredit <- if reel1result == reel2result && reel1result == "BOUNS"
+  then guessword genX
+  else if reel2result == reel3result && reel2result == "BOUNS"
+  then guessnumber genX
+  else return(0)
   
   let oldcredit = newTotalCredit
   let newTotalCredit = if reel1result == reel2result && reel2result == reel3result
-                       then oneGameCredit * 10 + oldcredit + gamecredit
+                       then if gamecredit == 2
+                            then oneGameCredit * 15 + oldcredit + oneGameCredit
+                            else oneGameCredit * 10 + oldcredit + oneGameCredit
                        else if reel1result == reel2result || reel2result == reel3result || reel1result == reel3result
-                  then oneGameCredit*2 + oldcredit
-              else oldcredit
+                            then if gamecredit == 2
+                                 then oneGameCredit*7 + oldcredit + oneGameCredit
+                                 else oneGameCredit*2 + oldcredit + oneGameCredit
+                            else oldcredit
 
   putStrLn(" ")
-  let winlosecredit = newTotalCredit - oldcredit
+  let winlosecredit = newTotalCredit - oldcredit - oneGameCredit
   if winlosecredit > 0
   then putStrLn("You have won: $ " ++ show winlosecredit)
   else return()
@@ -120,25 +127,26 @@ play option totalCredit oneGameCredit genX iter
   putStrLn("You have: $ " ++ show newTotalCredit ++ " left.")
   if newTotalCredit == 0
   then play option 0 oneGameCredit genX iter
-  else onegame newTotalCredit gen4
+  else onegame newTotalCredit gen4 iter
   
   
  | option == "minigame" = do
   let newTotalCredit = totalCredit - oneGameCredit
-  gamecredit <- guess genX
+  let (n, gen1) = randomR (0, 1) genX:: (Int, StdGen)
+  gamecredit <- if n == 0 then guessword genX else guessnumber genX
+  
   let oldcredit = newTotalCredit
-  let newTotalCredit = if gamecredit == 2
-                       then oldcredit + oneGameCredit*2
-             else oldcredit
+  let newTotalCredit = if gamecredit == 2 then oldcredit + oneGameCredit*2 else oldcredit
   let winlosecredit = newTotalCredit - oldcredit
   if winlosecredit > 0
   then putStrLn("You have won: $ " ++ show winlosecredit)
   else return()
-
+  
+  
   putStrLn("You have: $ " ++ show newTotalCredit ++ " left.")
   if newTotalCredit == 0
-  then play "spin" 0 0 genX iter
-  else onegame newTotalCredit genX
+  then play "spin" 0 0 gen1 iter
+  else onegame newTotalCredit gen1 iter
 
   
 
@@ -150,12 +158,10 @@ play option totalCredit oneGameCredit genX iter
   putStrLn("  <spin>   to play")
   putStrLn("<minigame> to play minigame")
   putStrLn("  <end>    to end the game") 
-  option <- getLine  
   newoption <- getLine
   play newoption totalCredit oneGameCredit genX iter
   
-  
-  
+ 
   
 buildMachine oneGameCredit iter
  | (oneGameCredit*iter) == 1 = do
@@ -165,4 +171,26 @@ buildMachine oneGameCredit iter
  | (oneGameCredit*iter) >= 3 && oneGameCredit < 6 = do
   return ["777","BOUNS","BOUNS","ORANGE","BELL","BELL","CHERRY","ORANGE","777","APPLE","PEAR"]
  | otherwise = do
-  return ["777","BOUNS","ORANGE","WATERMELON","BELL","PEACH","CHERRY","APPLE","PEAR"] 
+  return ["777","BOUNS","ORANGE","WATERMELON","BELL","PEACH","CHERRY","APPLE","PEAR"]
+
+
+getLineInttotal :: IO Int
+getLineInttotal = do
+ putStrLn(" ")
+ putStrLn "Now please enter the total credit you want to play:"
+ line <- getLine
+ case readMaybe line of
+  Just x -> return x
+  Nothing -> putStrLn "Invalid number entered" >> getLineInttotal
+
+  
+
+getLineIntsingle :: IO Int
+getLineIntsingle = do
+ putStrLn(" ")
+ putStrLn "Now please enter how many credits you want to bet on each game"
+ line <- getLine
+ case readMaybe line of
+  Just x -> return x
+  Nothing -> putStrLn "Invalid number entered" >> getLineIntsingle
+ 
