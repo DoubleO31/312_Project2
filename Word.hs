@@ -4,6 +4,7 @@ import System.Random
 
 
 guessword genX= do 
+ displayHelp
  handle <- openFile "words.txt" ReadMode
  contents <- hGetContents handle
  let words = lines contents
@@ -11,20 +12,45 @@ guessword genX= do
  let word = words !! n
  playguessword word ( map (\ x -> '_' ) word ) 6
 
+
+displayHelp = mapM_ putStrLn $
+ "":
+ "":
+ "  ***********************************************************************":
+ "  ************************ GUESS THE MAGIC WORLD ************************":
+ "  ***********************************************************************":
+ "":
+ "":
+ "                           Little insides:":
+ "                 You have 6 chances to guess the word":
+ "                   The word are slot machine related ":
+ "":
+ "":
+ "":
+ "                             How to Play:":
+ "                       Type your letter and Enter!":
+ "":
+ "                             LET'S START":
+ "":
+ "":
+ []
+
+
+
 playguessword word known guesses 
  | word == known = do
    putStrLn known
-   putStrLn ("You win!")
+   putStrLn ("  You win!")
    return 2
  | guesses == 0 = do
    putStrLn known
-   putStrLn ("You lose. The word was " ++ word ++ ".")
+   putStrLn ("  You lose. The word was " ++ word ++ ".")
    return 0
  | otherwise = do
    putStrLn(" ")
-   putStrLn ("A " ++ (show(length known)) ++ " letters word.")
+   putStrLn ("  This is a " ++ (show(length known)) ++ " letters word.")
    putStrLn known
-   putStrLn ("You have " ++ (show guesses) ++ " guesses left.")
+   putStrLn ("  You have " ++ (show guesses) ++ " guesses left.")
    putStrLn(" ")
    line <- getLine
    if length line == 0 
