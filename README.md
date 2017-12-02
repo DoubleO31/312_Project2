@@ -1,3 +1,3 @@
 # 312_Project2
 
-Run main to start the game
+Run Main.hs and type main in terminal to start playing slot machine. 
