@@ -3,14 +3,15 @@ import System.IO
 import System.Random
 import Text.Read
 
-
+-- guessnumber mini game main function
 guessnumber genX= do
  displayHelp
 
+-- generate a random number from 1 - 100
  let (randomnumber,_) = randomR (1, 100) genX:: (Int, StdGen)
  playguessnumber randomnumber 0 6
 
-
+-- display rules
 displayHelp = mapM_ putStrLn $
  "":
  "":
@@ -34,7 +35,7 @@ displayHelp = mapM_ putStrLn $
  []
 
 
-
+--to evaluate win/lose after each guesses
 playguessnumber number guessn guesses 
  | number == guessn = do
    putStrLn ("  You win!")
@@ -47,7 +48,7 @@ playguessnumber number guessn guesses
    line <- getLineInt
    handle number line guesses
 
-
+--to determine if each guess is too high or too low
 handle number guessn guesses
  | guessn > number = do
   putStrLn(" ")
@@ -67,7 +68,7 @@ handle number guessn guesses
   playguessnumber number guessn newguesses
 
   
-
+--to make sure int is input, referece to raymonad in https://stackoverflow.com/questions/20831012/how-to-properly-use-the-readmaybe-function-in-io
 getLineInt :: IO Int
 getLineInt = do
   putStrLn "  Now please enter a number (range between 0 to 100) :"
