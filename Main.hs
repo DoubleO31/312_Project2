@@ -60,9 +60,12 @@ displayHomePage = mapM_ putStrLn $
  "      This slot machine has 3 reels with 10 results on each reel":
  "        Prize money increase with the number of credits played":
  "                            1credit 2credit 3credit":
- "                777-777-777 :  200     400     600":
- "          BOUNS-BOUNS-BOUNS :  100     200     300  + mini game ":
- "                               etc....":
+ "                777-777-ANY :  2       4       6":
+ "                777-777-777 :  10      20      30":
+ "            BOUNS-BOUNS-ANY :  2       4       6  + bonus mini game":
+ "            Bonus mini game :  5       10      15":                  
+ "            Mini game       :  2       4       6":
+ "            etc....":
  "":
  "":
  "":
