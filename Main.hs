@@ -45,7 +45,6 @@ onegame totalcredits genX iter = do
  putStrLn(" ")
  putStrLn("  Now enter: ")
  putStrLn("    <spin>   to play")
- putStrLn("   <story>   to play story mode")
  putStrLn("  <minigame> to play minigame")
  putStrLn("    <end>    to end the game") 
  option <- getLine
