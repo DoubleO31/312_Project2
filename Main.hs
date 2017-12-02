@@ -38,17 +38,15 @@ onegame totalcredits genX iter = do
   then do 
    putStrLn("  Please enter at least 1 credit to play!")
    onegame totalcredits genX iter
-  else return()
-
- 
- putStrLn(" ")
- putStrLn(" ")
- putStrLn("  Now enter: ")
- putStrLn("    <spin>   to play")
- putStrLn("  <minigame> to play minigame")
- putStrLn("    <end>    to end the game") 
- option <- getLine
- play option totalcredits oneGameCredit genX iter
+  else do
+   putStrLn(" ")
+   putStrLn(" ")
+   putStrLn("  Now enter: ")
+   putStrLn("    <spin>   to play")
+   putStrLn("  <minigame> to play minigame")
+   putStrLn("    <end>    to end the game") 
+   option <- getLine
+   play option totalcredits onegamec genX iter
 
 displayHomePage = mapM_ putStrLn $
  "  ***********************************************************************":
