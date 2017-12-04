@@ -79,6 +79,7 @@ play option totalCredit oneGameCredit genX iter
  -- no more money the game end
  | totalCredit <= 0 = do 
   putStrLn ("  You have no more credits")
+  tocredit
 
  -- user's option to end the game
  | option == "end" = do
